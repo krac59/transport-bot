@@ -1,0 +1,8 @@
+
+## 🔄 **Процесс заливки на GitHub:**
+
+### 1. **Инициализация репозитория:**
+```bash
+git init
+git add .
+git commit -m "Initial commit: Transport bot MVP"

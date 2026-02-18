@@ -1,0 +1,36 @@
+# Секреты и ключи
+.env
+*.key
+*.pem
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+
+# Логи
+*.log
+logs/
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+
+# Настройки IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Дистрибутивы
+dist/
+build/
+*.egg-info/
+
+# Временные файлы
+*.tmp
+*.bak
+*.swp
+.DS_Store
