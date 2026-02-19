@@ -1,29 +1,49 @@
 import os
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
 
-load_dotenv()
+# Пытаемся загрузить .env если он есть (для локальной разработки)
+try:
+    from dotenv import load_dotenv
+    env_path = Path('.') / '.env'
+    if env_path.exists():
+        load_dotenv()
+        print("✅ Загружен локальный .env файл")
+except ImportError:
+    print("⚠️ python-dotenv не установлен, используем переменные окружения системы")
 
-# Конфигурация бота
+# Конфигурация бота - сначала из переменных окружения, потом из .env
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN not set in .env file")
+    print("❌ КРИТИЧЕСКАЯ ОШИБКА: BOT_TOKEN не найден!")
+    print("📋 Для bothost.ru добавьте переменную BOT_TOKEN в панели управления")
+    print("📋 Для локальной разработки создайте файл .env с BOT_TOKEN=ваш_токен")
+    raise ValueError("BOT_TOKEN not set in environment variables")
 
 MAIN_ADMIN = int(os.getenv('MAIN_ADMIN', '0'))
 if MAIN_ADMIN == 0:
-    raise ValueError("MAIN_ADMIN not set in .env file")
+    print("⚠️ ВНИМАНИЕ: MAIN_ADMIN не установлен, админ-панель будет недоступна")
+    print("📋 Добавьте MAIN_ADMIN в переменные окружения")
 
+# Ключи шифрования
 SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key-change-me')
-ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY', 'encryption-key-32-bytes-long!!!')
+ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
+if not ENCRYPTION_KEY:
+    print("⚠️ ВНИМАНИЕ: ENCRYPTION_KEY не установлен, используется значение по умолчанию")
+    ENCRYPTION_KEY = "encryption-key-32-bytes-long!!!"
+
+# Путь к базе данных
 DATABASE_PATH = os.getenv('DATABASE_PATH', 'transport_bot.db')
+print(f"📁 База данных: {DATABASE_PATH}")
 
 # Список админов (загружается из БД при старте)
-ADMINS = [MAIN_ADMIN]
+ADMINS = [MAIN_ADMIN] if MAIN_ADMIN else []
 
 # Классы автомобилей
 CAR_CLASSES = {
     'economy': {'name': '🚗 Эконом', 'base_price': 17, 'min_price': 200, 'icon': '🚗'},
-    'comfort': {'name': '🚘 Комфорт', 'base_price': 22, 'min_price': 300, 'icon': '🚘'},
-    'business': {'name': '🚙 Бизнес', 'base_price': 30, 'min_price': 500, 'icon': '🚙'}
+    'comfort': {'name': '🚘 Комфорт', 'base_price': 21, 'min_price': 300, 'icon': '🚘'},
+    'business': {'name': '🚙 Бизнес', 'base_price': 27, 'min_price': 500, 'icon': '🚙'}
 }
 
 # Города Краснодарского края и Крыма
@@ -67,7 +87,7 @@ CITIES = [
     {'name': 'Щёлкино', 'region': 'Крым'},
 ]
 
-# Расстояния между основными городами (примерные, в км)
+# Расстояния между основными городами
 DISTANCES = {
     ('Краснодар', 'Симферополь'): 500,
     ('Краснодар', 'Севастополь'): 550,
@@ -125,3 +145,7 @@ DEFAULT_SETTINGS = {
     'waiting_rate_2': '4',
     'waiting_rate_3': '5'
 }
+
+print("✅ Конфигурация загружена")
+print(f"🤖 Токен бота: {BOT_TOKEN[:10]}...")
+print(f"👑 Главный админ: {MAIN_ADMIN}")
